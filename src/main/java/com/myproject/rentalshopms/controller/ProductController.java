@@ -60,4 +60,5 @@ public class ProductController {
 //    public ResponseEntity<List<ProductResponseDTO>> searchProducts(@RequestParam String keyword) {
 //        return new ResponseEntity<>(productService.searchProducts(keyword), HttpStatus.OK);
 //    }
+
 }
