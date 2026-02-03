@@ -24,8 +24,8 @@ public interface PaymentRepo extends JpaRepository<Payment, Long> {
         SELECT p FROM Payment p
         WHERE (:flow IS NULL OR p.paymentFlow = :flow)
         AND (:type IS NULL OR p.paymentType = :type)
-        AND (:fromDate IS NULL OR p.paidAt >= :fromDate)
-        AND (:toDate IS NULL OR p.paidAt <= :toDate)
+        AND (CAST(:fromDate AS DATE) IS NULL OR p.paidAt >= :fromDate)
+        AND (CAST(:toDate AS DATE) IS NULL OR p.paidAt <= :toDate)
     """)
     Page<Payment> searchPayments(
             @Param("flow") PaymentFlow flow,
