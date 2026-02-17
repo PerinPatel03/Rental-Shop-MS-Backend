@@ -14,8 +14,44 @@ import java.util.List;
 
 @Repository
 public interface BookingRepo extends JpaRepository<Booking, Long> {
-    @Query("SELECT COUNT(b) = 0 FROM Booking b WHERE b.product.id = :prodId AND b.bookingStatus IN (com.myproject.rentalshopms.enums.BookingStatus.RESERVED, com.myproject.rentalshopms.enums.BookingStatus.PICKED_UP) AND b.startDate <= :endDate AND b.endDate >= :startDate")
-    boolean isProductAvailable(@Param("prodId") Long prodId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    @Query("""
+            SELECT COUNT(b) = 0 
+            FROM Booking b 
+            WHERE b.product.id = :prodId 
+            AND b.bookingStatus IN (
+                com.myproject.rentalshopms.enums.BookingStatus.RESERVED, 
+                com.myproject.rentalshopms.enums.BookingStatus.PICKED_UP
+            ) 
+            AND b.startDate <= :endDate 
+            AND b.endDate >= :startDate
+            """)
+    boolean isProductAvailable(
+            @Param("prodId") Long prodId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    // if you want to combine availability checker for both add and update :  AND (:bookingId IS NULL OR b.id <> :bookingId)
+
+    @Query("""
+        SELECT COUNT(b) = 0
+        FROM Booking b
+        WHERE b.product.id = :prodId
+        AND b.id <> :bookingId
+        AND b.bookingStatus IN (
+            com.myproject.rentalshopms.enums.BookingStatus.RESERVED,
+            com.myproject.rentalshopms.enums.BookingStatus.PICKED_UP
+        )
+        AND b.startDate <= :endDate
+        AND b.endDate >= :startDate
+        """)
+    boolean isProductAvailableForUpdate(
+            @Param("bookingId") Long bookingId,
+            @Param("prodId") Long prodId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
 
 //    @Query("SELECT b FROM Booking b WHERE b.product.id = :prodId")
 //    List<Booking> getProductBookings(@Param("prodId") Long prodId);

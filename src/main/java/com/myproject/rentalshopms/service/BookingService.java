@@ -143,7 +143,15 @@ public class BookingService {
 
         Product product = productRepo.findById(booking.getProduct().getId()).orElseThrow(() -> new RuntimeException("Product not found"));
 
-        boolean available = isProductAvailable(product.getId(), dto.getStartDate(), dto.getEndDate());
+        LocalDate today = LocalDate.now();
+        if (dto.getStartDate().isBefore(today)) {
+            throw new RuntimeException("Start date cannot be in the past");
+        }
+        if (dto.getEndDate().isBefore(dto.getStartDate())) {
+            throw new RuntimeException("End date must be equal to or after start date");
+        }
+
+        boolean available = bookingRepo.isProductAvailableForUpdate(booking.getId(), product.getId(), dto.getStartDate(), dto.getEndDate());
 
         if (!available) {
             throw new RuntimeException("Product not available for selected dates");
